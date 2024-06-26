@@ -52,7 +52,7 @@ def convert_df_to_excel(df: pd.DataFrame, new_df: pd.DataFrame) -> bytes:
 def selected_columns_page(df_cases, df_classification):
     selected_abbreviation = st.sidebar.radio('약칭을 선택하세요:', df_classification['약칭'].unique())
     with st.sidebar.expander(label='표시할 사고 사례 데이터 열 선택'):
-        columns_selected = [column for column in df_cases.columns.tolist() if st.checkbox(column, value=True)]
+        columns_selected = [column for column in df_cases.columns.tolist() if st.toggle(column, value=True)]
     display_cases(df_cases, df_classification, columns_selected, selected_abbreviation)
 
 def navigress(total_cases: int) -> None:
@@ -61,14 +61,14 @@ def navigress(total_cases: int) -> None:
         if st.session_state.index > 0:
             if st.button('이전', key='prev'):
                 st.session_state.index -= 1
-                st.experimental_rerun()
+                st.rerun()
     with page:
         st.markdown(f"<p style='font-size:21px; text-align:center;'>{st.session_state.index + 1} / {total_cases}</p>", unsafe_allow_html=True)
     with nex:
         if st.session_state.index + 1 < total_cases:
             if st.button('다음', key='next'):
                 st.session_state.index += 1
-                st.experimental_rerun()
+                st.rerun()
 
 def display_cases(df_cases, df_classification, columns_selected, selected_abbreviation):
     container = st.container()
@@ -112,7 +112,7 @@ def display_cases(df_cases, df_classification, columns_selected, selected_abbrev
             file_name=f'{filename}_분류된_사고_사례(in progress).xlsx',
             mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
-    logger.info(f"{st.session_state.choices = }")
+    logger.info('\n '.join([f"{i+1}. {v}" for i, v in enumerate(st.session_state.choices)]) +  '\n' + '-'*75)
 
 def main():
     st.sidebar.title('파일 업로드')
