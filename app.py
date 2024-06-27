@@ -32,7 +32,7 @@ class MyDataFrame(pd.DataFrame):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
-    def get_label(self, choice: str) -> Dict[str, str] | None:
+    def get_label(self, choice: str) -> Dict[str, str]:
         pattern = r"\*\*\[(.*?)\]\*\* (.*)"
         match = re.match(pattern, choice)
         if match:
@@ -40,7 +40,7 @@ class MyDataFrame(pd.DataFrame):
             세부_작업 = match.group(2)
             return {"작업 공사 종류": 작업_공사_종류, "세부 작업": 세부_작업}
         else:
-            return None
+            return {"작업 공사 종류": "분류불능", "세부 작업": "분류불능"}
 
 def convert_df_to_excel(df: pd.DataFrame, new_df: pd.DataFrame) -> bytes:
     output = BytesIO()
@@ -84,7 +84,8 @@ def display_cases(df_cases, df_classification, columns_selected, selected_abbrev
         st.markdown(f"<div style='border: 1px solid #e1e1e1; padding: 10px; border-radius: 5px;'><h3>사고 사례 {st.session_state.index + 1}:</h3><ul><li>" + '<li>'.join(f"<b>{col}:</b> {row[col]}" for col in columns_selected) + "</ul></div><br/>", unsafe_allow_html=True)
         selected_row = df_classification[df_classification['약칭'] == selected_abbreviation]
         options: List[str] = [f"**[{row['작업 공사 종류']}]** {row['세부 작업']}" for _, row in selected_row.iterrows()]
-        choice = MyDataFrame(df_cases).get_label(st.radio('작업 공사 종류와 작업을 선택하세요:', options=options.append("**[분류불능]** 분류불능")))
+        options.insert(0, "**[분류불능]** 분류불능")
+        choice = MyDataFrame(df_cases).get_label(st.radio('작업 공사 종류와 작업을 선택하세요:', options=options))
         
         if st.session_state.index >= len(st.session_state.choices):
             st.session_state.choices.append(choice)
