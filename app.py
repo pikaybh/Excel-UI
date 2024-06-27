@@ -38,7 +38,7 @@ class MyDataFrame(pd.DataFrame):
         if match:
             작업_공사_종류 = match.group(1)
             세부_작업 = match.group(2)
-            return {"작업 공사 종류": 작업_공사_종류, "세부_작업": 작업}
+            return {"작업 공사 종류": 작업_공사_종류, "세부_작업": 세부_작업}
         else:
             return None
 
