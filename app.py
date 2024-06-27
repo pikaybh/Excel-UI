@@ -37,8 +37,8 @@ class MyDataFrame(pd.DataFrame):
         match = re.match(pattern, choice)
         if match:
             작업_공사_종류 = match.group(1)
-            작업 = match.group(2)
-            return {"작업 공사 종류": 작업_공사_종류, "작업": 작업}
+            세부_작업 = match.group(2)
+            return {"작업 공사 종류": 작업_공사_종류, "세부_작업": 작업}
         else:
             return None
 
@@ -83,7 +83,7 @@ def display_cases(df_cases, df_classification, columns_selected, selected_abbrev
         row = df_cases.iloc[st.session_state.index]
         st.markdown(f"<div style='border: 1px solid #e1e1e1; padding: 10px; border-radius: 5px;'><h3>사고 사례 {st.session_state.index + 1}:</h3><ul><li>" + '<li>'.join(f"<b>{col}:</b> {row[col]}" for col in columns_selected) + "</ul></div><br/>", unsafe_allow_html=True)
         selected_row = df_classification[df_classification['약칭'] == selected_abbreviation]
-        options: List[str] = [f"**[{row['작업 공사 종류']}]** {row['작업']}" for _, row in selected_row.iterrows()]
+        options: List[str] = [f"**[{row['작업 공사 종류']}]** {row['세부 작업']}" for _, row in selected_row.iterrows()]
         choice = MyDataFrame(df_cases).get_label(st.radio('작업 공사 종류와 작업을 선택하세요:', options=options))
         
         if st.session_state.index >= len(st.session_state.choices):
